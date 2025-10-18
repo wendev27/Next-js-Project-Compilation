@@ -1,0 +1,21 @@
+then inside the app
+
+- main page and layout of the root project
+
+- if you have 2 or more projects you need to rewrite the layout and main page by creating another main and layout page inside the created folder
+
+then inside the project's folder
+you have to create 4 directories
+
+- 1 client side (create page and layout inside)
+- 2 admin side (create page and layout inside)
+- 3 lib folders or scripts
+  inside lib folder contains all the important functions
+
+why create another page.tsx and layout.tsx
+- it is for rewriting the layout of the root project
+
+both views folder should contain their own components
+eg.Navbar
+
+
