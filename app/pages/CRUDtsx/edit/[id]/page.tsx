@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation"; // 👈 use next/navigation in App Router
 import { useEffect, useState } from "react";
-import { listItems, updateItem, Item } from "@/lib/api";
+import { listItems, updateItem, Item } from "../../../../../lib/CRUD/api";
 
 export default function EditPage() {
   const router = useRouter();

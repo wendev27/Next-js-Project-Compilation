@@ -3,9 +3,12 @@
 import { useEffect, useState } from "react";
 import { account } from "../../../../lib/CRUD/appwrite";
 import Link from "next/link";
+import { Models } from "appwrite";
 
 export default function DashboardPage() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<Models.User<Models.Preferences> | null>(
+    null
+  );
 
   useEffect(() => {
     async function getUser() {

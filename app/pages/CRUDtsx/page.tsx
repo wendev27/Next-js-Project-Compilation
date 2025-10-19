@@ -5,13 +5,16 @@ import Link from "next/link";
 import { listItems, deleteItem, Item } from "../../../lib/CRUD/api";
 
 import { account } from "../../../lib/CRUD/appwrite";
+import type { Models } from "appwrite";
 
 export default function Home() {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
 
   // after importing the account make sure you make a usestate for the account
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<Models.User<Models.Preferences> | null>(
+    null
+  );
 
   useEffect(() => {
     load();
