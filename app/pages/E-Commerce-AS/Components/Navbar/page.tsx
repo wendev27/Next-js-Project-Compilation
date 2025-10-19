@@ -70,10 +70,10 @@ export default function Navbar() {
 
   const navLinks = [
     { href: "/pages/E-Commerce-AS", label: "Dashboard" },
-    { href: "/pages/E-Commerce-AS/Pages/Products", label: "Products" },
-    { href: "/pages/E-Commerce-AS/Pages/Reviews", label: "Reviews" },
-    { href: "/pages/E-Commerce-AS/Pages/Statistics", label: "Statistics" },
-    { href: "/pages/E-Commerce-AS/Pages/MyStore", label: "My Store" },
+    { href: "/pages/E-Commerce-AS/pages/Products", label: "Products" },
+    { href: "/pages/E-Commerce-AS/pages/Reviews", label: "Reviews" },
+    { href: "/pages/E-Commerce-AS/pages/Statistics", label: "Statistics" },
+    { href: "/pages/E-Commerce-AS/pages/MyStore", label: "My Store" },
   ];
 
   async function logout() {
