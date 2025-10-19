@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Client, Databases, Storage, ID } from "appwrite";
+import { Client, Databases, Storage, ID, Models } from "appwrite";
 import Image from "next/image";
 
 const client = new Client()
@@ -15,8 +15,17 @@ const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_EcommerceDB!;
 const STORE_COLLECTION = process.env.NEXT_PUBLIC_APPWRITE_EcommerceStore!;
 const BUCKET_ID = process.env.NEXT_PUBLIC_APPWRITE_EcommerceBucket!;
 
+type StoreDocument = Models.Document & {
+  name: string;
+  description: string;
+  address: string;
+  contact: string;
+  hours: string;
+  logoUrl?: string;
+};
+
 export default function StorePage() {
-  const [store, setStore] = useState<any>(null);
+  const [store, setStore] = useState<StoreDocument | null>(null);
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -35,8 +44,16 @@ export default function StorePage() {
           STORE_COLLECTION
         );
         if (res.documents.length > 0) {
-          setStore(res.documents[0]);
-          setForm(res.documents[0]);
+          const doc = res.documents[0] as unknown as StoreDocument;
+
+          setStore(doc);
+          setForm({
+            name: doc.name,
+            description: doc.description,
+            address: doc.address,
+            contact: doc.contact,
+            hours: doc.hours,
+          });
         }
       } catch (err) {
         console.error("Failed to fetch store:", err);
@@ -45,12 +62,16 @@ export default function StorePage() {
     fetchStore();
   }, []);
 
-  const handleChange = (e: any) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleLogoChange = (e: any) => {
-    setLogo(e.target.files[0]);
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setLogo(e.target.files[0]);
+    }
   };
 
   const handleSave = async () => {
@@ -99,7 +120,6 @@ export default function StorePage() {
     <div className="p-8 max-w-3xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">🏪 Store Management</h1>
 
-      {/* Logo Preview */}
       <div className="flex flex-col items-center mb-6">
         {store?.logoUrl ? (
           <Image
@@ -122,7 +142,6 @@ export default function StorePage() {
         />
       </div>
 
-      {/* Store Form */}
       <div className="space-y-4">
         <input
           name="name"
