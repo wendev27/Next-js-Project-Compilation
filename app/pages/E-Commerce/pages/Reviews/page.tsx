@@ -5,7 +5,7 @@ import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import { User } from "lucide-react";
 
-const Reviews = () => {
+export default function Reviews() {
   const clientSays = [
     {
       id: 1,
@@ -86,6 +86,4 @@ const Reviews = () => {
       </div>
     </div>
   );
-};
-
-export default Reviews;
+}
