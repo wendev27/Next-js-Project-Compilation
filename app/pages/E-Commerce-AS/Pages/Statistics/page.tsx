@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Client, Databases, Query } from "appwrite";
+import { Client, Databases, Models } from "appwrite";
 import {
   BarChart,
   Bar,
@@ -13,33 +13,54 @@ import {
   Pie,
   Cell,
   ResponsiveContainer,
+  PieLabelRenderProps,
 } from "recharts";
 
+// ✅ Initialize Appwrite client
 const client = new Client()
   .setEndpoint("https://cloud.appwrite.io/v1")
   .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID!);
 
 const databases = new Databases(client);
 
+// ✅ Constants
 const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_EcommerceDB!;
 const PRODUCTS_COLLECTION = process.env.NEXT_PUBLIC_APPWRITE_EcommercePT!;
 const ORDERS_COLLECTION = process.env.NEXT_PUBLIC_APPWRITE_EcommerceOrders!;
 const REVIEWS_COLLECTION = process.env.NEXT_PUBLIC_APPWRITE_EcommerceReviews!;
 const LOGS_COLLECTION = process.env.NEXT_PUBLIC_APPWRITE_Logs!;
 
+// ✅ Define types
+interface MonthlyOrderData {
+  month: string;
+  orders: number;
+}
+
+interface CategoryData {
+  name: string;
+  value: number;
+}
+
+interface Stats {
+  products: number;
+  orders: number;
+  reviews: number;
+  logs: number;
+}
+
 export default function StatisticsPage() {
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<Stats>({
     products: 0,
     orders: 0,
     reviews: 0,
     logs: 0,
   });
 
-  const [orderData, setOrderData] = useState<any[]>([]);
-  const [categoryData, setCategoryData] = useState<any[]>([]);
+  const [orderData, setOrderData] = useState<MonthlyOrderData[]>([]);
+  const [categoryData, setCategoryData] = useState<CategoryData[]>([]);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (): Promise<void> => {
       try {
         const [productsRes, ordersRes, reviewsRes, logsRes] = await Promise.all(
           [
@@ -57,8 +78,8 @@ export default function StatisticsPage() {
           logs: logsRes.total,
         });
 
-        // Mock: Monthly Orders
-        const monthlyOrders = [
+        // ✅ Mock data for charts
+        setOrderData([
           { month: "Jan", orders: 20 },
           { month: "Feb", orders: 35 },
           { month: "Mar", orders: 40 },
@@ -71,19 +92,16 @@ export default function StatisticsPage() {
           { month: "Oct", orders: 70 },
           { month: "Nov", orders: 80 },
           { month: "Dec", orders: 90 },
-        ];
-        setOrderData(monthlyOrders);
+        ]);
 
-        // Mock: Category Breakdown
-        const categories = [
+        setCategoryData([
           { name: "Food", value: 45 },
           { name: "Drinks", value: 30 },
           { name: "Desserts", value: 15 },
           { name: "Add-ons", value: 10 },
-        ];
-        setCategoryData(categories);
-      } catch (err) {
-        console.error("Error loading statistics:", err);
+        ]);
+      } catch (error) {
+        console.error("Error loading statistics:", error);
       }
     };
 
@@ -91,6 +109,13 @@ export default function StatisticsPage() {
   }, []);
 
   const COLORS = ["#f59e0b", "#3b82f6", "#10b981", "#ef4444"];
+
+  // ✅ Properly typed Pie label
+  const renderPieLabel = (props: PieLabelRenderProps): string => {
+    const { name, percent } = props;
+    if (!name || percent === undefined) return "";
+    return `${name} ${((percent as number) * 100).toFixed(0)}%`;
+  };
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
@@ -132,54 +157,33 @@ export default function StatisticsPage() {
         ))}
       </div>
 
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-        {/* Orders Bar Chart */}
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4 text-gray-700">
-            📅 Monthly Orders
-          </h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={orderData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="orders" fill="#f59e0b" radius={[8, 8, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Product Category Pie Chart */}
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4 text-gray-700">
-            🍔 Product Category Breakdown
-          </h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={categoryData}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                outerRadius={100}
-                fill="#8884d8"
-                dataKey="value"
-                label={({ name, percent }) =>
-                  `${name} ${(percent * 100).toFixed(0)}%`
-                }
-              >
-                {categoryData.map((_, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
-                  />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
+      {/* Product Category Pie Chart */}
+      <div className="bg-white rounded-xl shadow-md p-6">
+        <h2 className="text-xl font-semibold mb-4 text-gray-700">
+          🍔 Product Category Breakdown
+        </h2>
+        <ResponsiveContainer width="100%" height={300}>
+          <PieChart>
+            <Pie
+              data={
+                categoryData as unknown as Record<string, string | number>[]
+              }
+              cx="50%"
+              cy="50%"
+              outerRadius={100}
+              dataKey="value"
+              label={renderPieLabel}
+            >
+              {categoryData.map((_, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={COLORS[index % COLORS.length]}
+                />
+              ))}
+            </Pie>
+            <Tooltip />
+          </PieChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );

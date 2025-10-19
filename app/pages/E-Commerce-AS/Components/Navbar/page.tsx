@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { Models } from "appwrite";
 
 import { account } from "../../../../../lib/E-commerce/appwriteEcommerce";
 
@@ -40,8 +41,11 @@ function ActiveLink({
 }
 
 export default function Navbar() {
-  // Auth account from google using appwrite
-  const [user, setUser] = useState<null | any>(null);
+  // Auth account from google using appwriteimport type { Models } from "appwrite";
+
+  const [user, setUser] = useState<Models.User<Models.Preferences> | null>(
+    null
+  );
 
   useEffect(() => {
     const fetchUser = async () => {
