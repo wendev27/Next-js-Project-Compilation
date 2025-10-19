@@ -70,7 +70,6 @@ export default function Navbar() {
   const navLinks = [
     { href: "/pages/E-Commerce", label: "Home" },
     { href: "/pages/E-Commerce/pages/Shop", label: "Shop" },
-    { href: "/pages/E-Commerce/pages/Reviews", label: "Reviews" },
     { href: "/pages/E-Commerce/pages/Pages", label: "Pages" },
     { href: "/pages/E-Commerce/pages/About", label: "About" },
   ];

@@ -4,7 +4,6 @@ import Delivery from "./Components/Delivery/page";
 import Features from "./Components/Featured/page";
 import Brand from "./Components/Brand/page";
 import Shop from "./pages/Shop/page";
-import Reviews from "./pages/Reviews/page";
 import Recommendation from "./Components/Recommendation/page";
 
 export default function EcommerceHome() {
@@ -26,10 +25,6 @@ export default function EcommerceHome() {
 
       <div className="w-full flex items-center justify-center bg-amber-100 p-5">
         <Shop></Shop>
-      </div>
-
-      <div className="w-full flex items-center justify-center bg-gray-800 min-h-[589px] pb-[80px] pt-[80px]">
-        <Reviews></Reviews>
       </div>
 
       <div className="w-full flex items-center justify-center min-h-[589px] pb-[80px] pt-[80px]">

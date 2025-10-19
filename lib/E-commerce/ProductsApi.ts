@@ -1,24 +1,22 @@
 import { databases } from "./appwriteEcommerce";
 import { ID, Query } from "appwrite";
+import { logAction } from "./LogsApi"; // ✅ Import LogsApi
 
-import { logAction } from "./LogsApi";
-
+// ✅ Environment variables
 const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_EcommerceDB!;
 const PRODUCTS_COLLECTION = process.env.NEXT_PUBLIC_APPWRITE_EcommercePT!;
+const LOGS_COLLECTION = process.env.NEXT_PUBLIC_APPWRITE_Logs!; // optional if used inside LogsApi
 
-// comment and import tha LogsApi.ts
-const LOGS_COLLECTION = process.env.NEXT_PUBLIC_APPWRITE_Logs!;
-
-// start of Product collections
+// ✅ Product type
 export type Product = {
-  $id?: string; //APrwirte document id
+  $id?: string; // Appwrite document ID
   name: string;
   price: number;
   description: string;
   ownerId: string;
 };
 
-// these are all the basic CRUD Functionalites for products
+// ✅ List all products
 export async function listProducts(): Promise<Product[]> {
   try {
     const response = await databases.listDocuments(
@@ -32,6 +30,7 @@ export async function listProducts(): Promise<Product[]> {
   }
 }
 
+// ✅ Create new product + log
 export async function createProduct(payload: Product) {
   try {
     const product = await databases.createDocument(
@@ -41,22 +40,20 @@ export async function createProduct(payload: Product) {
       payload
     );
 
-    const log = {
+    await logAction({
       action: "create",
       productId: product.$id,
       userId: payload.ownerId,
-    };
-
-    // Log it
-    await logAction(log);
+    });
 
     return product;
   } catch (error) {
-    console.error("Error creating products: ", error);
+    console.error("Error creating product:", error);
     throw error;
   }
 }
 
+// ✅ Update product + log
 export async function updateProduct(
   id: string,
   payload: Partial<Product>,
@@ -70,64 +67,48 @@ export async function updateProduct(
       payload
     );
 
-    const log = {
+    await logAction({
       action: "update",
       productId: id,
-      userId: userId,
-    };
-
-    await logAction(log);
+      userId,
+    });
 
     return updated;
   } catch (error) {
-    console.error("Error updating products: ", error);
+    console.error("Error updating product:", error);
     throw error;
   }
 }
 
-// export async function deleteItem(id: string) {
-//   return await databases.deleteDocument(DATABASE_ID, PRODUCTS_COLLECTION, id);
-
-//   const log = {
-//     action: "delete",
-//     productId: id,
-//     userId: product.ownerId,
-//   };
-
-//   await logAction("delete", id, ownerId);
-// }
-
+// ✅ Delete product + log
 export async function deleteItem(id: string, userId: string) {
   try {
     await databases.deleteDocument(DATABASE_ID, PRODUCTS_COLLECTION, id);
 
-    const log = {
+    await logAction({
       action: "delete",
       productId: id,
-      userId: userId,
-    };
-
-    await logAction(log);
+      userId,
+    });
 
     return { success: true };
   } catch (error) {
-    console.error("Error deleting product: ", error);
+    console.error("Error deleting product:", error);
     throw error;
   }
 }
 
-// After these functions are all custom made for more functionalities
-
-async function getUserProducts(userId: string) {
+// ✅ Get all products belonging to one user
+export async function getUserProducts(userId: string) {
   try {
-    return await databases.listDocuments(DATABASE_ID, PRODUCTS_COLLECTION, [
-      Query.equal("ownerId", userId),
-    ]);
+    const response = await databases.listDocuments(
+      DATABASE_ID,
+      PRODUCTS_COLLECTION,
+      [Query.equal("ownerId", userId)]
+    );
+    return response.documents as unknown as Product[];
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching user products:", error);
     throw error;
   }
 }
-// End for products table in appwrite
-
-// Start of Logs
