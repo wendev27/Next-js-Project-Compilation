@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -55,7 +56,7 @@ export default function RegisterPage() {
 
         {/* Google Signup */}
         <button className="w-full flex items-center justify-center gap-2 border border-gray-300 py-2 rounded-md hover:bg-gray-100 transition">
-          <img
+          <Image
             src="https://www.svgrepo.com/show/475656/google-color.svg"
             alt="Google"
             className="h-5 w-5"

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 
 // Slider
 const Slider = dynamic(() => import("react-slick"), {
@@ -58,7 +59,7 @@ function Recommendation() {
               {categories?.map((category, index) => (
                 <div key={index} className="p-4 h-[424px]">
                   <div className="feature_image mb-4 relative">
-                    <img
+                    <Image
                       className="w-full h-[424px] rounded-lg object-cover"
                       src={category?.image}
                       alt={category?.title}
